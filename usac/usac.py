@@ -155,3 +155,13 @@ class USACFactory:
 			.with_verification_strategy(PointOnLineVerification())
 			.with_num_iterations(num_iterations)
 			.build())
+	
+	@staticmethod
+	def cylinder_simple(num_iterations = 20):
+		return (USACBuilder()
+			.with_sampling_strategy(RandomPointsSampling(9))
+			.with_model_generation_strategy(CylinderFromPointsModelGeneration())
+			.with_verification_strategy(PointOnCylinderVerification())
+			.with_num_iterations(num_iterations)
+			.build())
+		
