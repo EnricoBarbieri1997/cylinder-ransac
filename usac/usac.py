@@ -146,3 +146,12 @@ class USACBuilder:
 	def build(self):
 		return USAC(self.steps)
 
+class USACFactory:
+	@staticmethod
+	def line_simple(num_iterations = 1000):
+		return (USACBuilder()
+			.with_sampling_strategy(RandomPointsSampling())
+			.with_model_generation_strategy(LineFromPointsModelGeneration())
+			.with_verification_strategy(PointOnLineVerification())
+			.with_num_iterations(num_iterations)
+			.build())
