@@ -26,6 +26,7 @@ if args.file:
 else:
 	points = np.array([])
 
-line_fitting = USACFactory.line_simple(10)
-model, inliers = line_fitting.run(points)
+cylinder_fitting = USACFactory.cylinder_simple()
+model, inliers = cylinder_fitting.run(points)
 print(model)
+print(f"{model[0]}x^2 + {model[1]}y^2 + {model[2]}z^2 + {model[3]}xy + {model[4]}xz + {model[5]}yz + {model[6]}x + {model[7]}y + {model[8]}z + 1 = 0")

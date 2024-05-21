@@ -4,6 +4,7 @@ class PointOnCylinderVerification():
 		inliers = []
 		for point in data:
 			x, y, z = point
+			# print(A * x**2 + B * y**2 + C * z**2 + D * x * y + E * x * z + F * y * z + G * x + H * y + I * z + 1)
 			if abs(
 				A * x**2 + B * y**2 + C * z**2 + D * x * y + E * x * z + F * y * z + G * x + H * y + I * z + 1
 			) < 1e-1:
