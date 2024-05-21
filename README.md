@@ -51,6 +51,12 @@ In each subfolder of the `usac` directory a `strategy.py` file defines the gener
 - [ModelRefinementStrategy](ModelRefinementStrategy.md)
 - [PostProcessingStrategy](PostProcessingStrategy.md)
 
+## Scripts
+A scripts folder containing files to generate dev points to use for testing is available. The available scripts can generate:
+- 2D points resembling a line with noise
+- 3D points resembling a cylinder with noise
+- 3D points with normals resembling a cylinder with noise
+
 # Model generation steps
 ## Cylinders
 ### As a quadric surface

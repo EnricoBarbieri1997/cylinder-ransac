@@ -14,7 +14,7 @@ x = radius * np.cos(theta)
 y = radius * np.sin(theta)
 
 # Add noise to the points position
-noise_scale = 0.1
+noise_scale = 0.5
 x += np.random.normal(0, noise_scale, num_points)
 y += np.random.normal(0, noise_scale, num_points)
 z += np.random.normal(0, noise_scale, num_points)
