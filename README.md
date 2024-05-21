@@ -38,18 +38,18 @@ USACFactory is a factory patter as the name suggests that provides ready to use 
 ## Strategies
 In each subfolder of the `usac` directory a `strategy.py` file defines the general interface of an algorithm step. The following strategies are available:
 
-- [PreProcessingStrategy](PreProcessingStrategy.md)
-- [NumberOfIterationsStrategy](NumberOfIterationsStrategy.md)
-- [PrefilteringStrategy](PrefilteringStrategy.md)
-- [SamplingStrategy](SamplingStrategy.md)
-- [SampleCheckStrategy](SampleCheckStrategy.md)
-- [ModelGenerationStrategy](ModelGenerationStrategy.md)
-- [ModelCheckStrategy](ModelCheckStrategy.md)
-- [VerificationStrategy](VerificationStrategy.md)
-- [DegeneracyStrategy](DegeneracyStrategy.md)
-- [EvaluationStrategy](EvaluationStrategy.md)
-- [ModelRefinementStrategy](ModelRefinementStrategy.md)
-- [PostProcessingStrategy](PostProcessingStrategy.md)
+- [PreProcessingStrategy](usac/pre_processing/strategy.py)
+- [NumberOfIterationsStrategy](usac/number_of_iterations/strategy.py)
+- [PrefilteringStrategy](usac/prefiltering/strategy.py)
+- [SamplingStrategy](usac/sampling/strategy.py)
+- [SampleCheckStrategy](usac/sample_check/strategy.py)
+- [ModelGenerationStrategy](usac/model_generation/strategy.py)
+- [ModelCheckStrategy](usac/model_check/strategy.py)
+- [VerificationStrategy](usac/verification/strategy.py)
+- [DegeneracyStrategy](usac/degeneracy/strategy.py)
+- [EvaluationStrategy](usac/evaluation/strategy.py)
+- [ModelRefinementStrategy](usac/model_refinement/strategy.py)
+- [PostProcessingStrategy](usac/post_processing/strategy.py)
 
 ## Scripts
 A scripts folder containing files to generate dev points to use for testing is available. The available scripts can generate:
