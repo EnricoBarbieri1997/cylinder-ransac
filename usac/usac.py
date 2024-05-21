@@ -9,6 +9,7 @@ from usac.model_check.all_pass import AllPassModelCheck
 from usac.model_check.strategy import ModelCheckStrategy
 from usac.model_generation.cylinder_from_points import CylinderFromPointsModelGeneration
 from usac.model_generation.cylinder_from_points_and_normals import CylinderFromPointsWithNormalsModelGeneration
+from usac.model_generation.cylinder_from_points_forming_circle import CylinderFromPointsFormingCircleModelGeneration
 from usac.model_generation.line_from_points import LineFromPointsModelGeneration
 from usac.model_generation.strategy import ModelGenerationStrategy
 from usac.model_refinement.no_refinement import NoRefinementModelRefinement
@@ -28,6 +29,7 @@ from usac.sampling.random_points import RandomPointsSampling
 from usac.sampling.strategy import SamplingStrategy
 from usac.verification.point_on_cylinder import PointOnCylinderVerification
 from usac.verification.point_on_line import PointOnLineVerification
+from usac.verification.point_with_normals_on_cylinder import PointWithNormalsOnCylinderVerification
 from usac.verification.strategy import VerificationStrategy
 
 class USACStepsDefinitionRequired(TypedDict):
@@ -195,5 +197,14 @@ class USACFactory:
 			.with_sampling_strategy(RandomPointsSampling(2))
 			.with_model_generation_strategy(CylinderFromPointsWithNormalsModelGeneration())
 			.with_verification_strategy(PointWithNormalsOnCylinderVerification())
+			.with_number_of_iterations_strategy(ConstantNumberOfIterations(1000))
+			.build())
+	
+	@staticmethod
+	def cylinder_from_points_forming_circle():
+		return (USACBuilder()
+			.with_sampling_strategy(RandomPointsSampling(3))
+			.with_model_generation_strategy(CylinderFromPointsFormingCircleModelGeneration())
+			.with_verification_strategy(PointOnCylinderVerification())
 			.with_number_of_iterations_strategy(ConstantNumberOfIterations(1000))
 			.build())

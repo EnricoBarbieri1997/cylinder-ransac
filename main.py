@@ -26,7 +26,7 @@ if args.file:
 else:
 	points = np.array([])
 
-cylinder_fitting = USACFactory.cylinder_with_normals()
+cylinder_fitting = USACFactory.cylinder_from_points_forming_circle()
 model, inliers = cylinder_fitting.run(points)
 print(model)
 print(f"{model[0]}x^2 + {model[1]}y^2 + {model[2]}z^2 + {model[3]}xy + {model[4]}xz + {model[5]}yz + {model[6]}x + {model[7]}y + {model[8]}z + 1 = 0")
