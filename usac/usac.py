@@ -8,6 +8,7 @@ from usac.evaluation.strategy import EvaluationStrategy
 from usac.model_check.all_pass import AllPassModelCheck
 from usac.model_check.strategy import ModelCheckStrategy
 from usac.model_generation.cylinder_from_points import CylinderFromPointsModelGeneration
+from usac.model_generation.cylinder_from_points_and_normals import CylinderFromPointsWithNormalsModelGeneration
 from usac.model_generation.line_from_points import LineFromPointsModelGeneration
 from usac.model_generation.strategy import ModelGenerationStrategy
 from usac.model_refinement.no_refinement import NoRefinementModelRefinement
@@ -187,4 +188,12 @@ class USACFactory:
 			.with_model_generation_strategy(CylinderFromPointsModelGeneration())
 			.with_verification_strategy(PointOnCylinderVerification())
 			.build())
-		
+	
+	@staticmethod
+	def cylinder_with_normals():
+		return (USACBuilder()
+			.with_sampling_strategy(RandomPointsSampling(2))
+			.with_model_generation_strategy(CylinderFromPointsWithNormalsModelGeneration())
+			.with_verification_strategy(PointWithNormalsOnCylinderVerification())
+			.with_number_of_iterations_strategy(ConstantNumberOfIterations(1000))
+			.build())
