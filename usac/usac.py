@@ -28,16 +28,20 @@ class USACStepsDefinitionRequired(TypedDict):
 	verification_strategy: VerificationStrategy
 
 class USACStepsDefinition(USACStepsDefinitionRequired, total = False):
+	pre_processing_strategy: PreProcessingStrategy
+	number_of_iterations_strategy: NumberOfIterationsStrategy
 	prefiltering_strategy: PrefilteringStrategy
 	sample_check_strategy: SampleCheckStrategy
 	model_check_strategy: ModelCheckStrategy
 	degeneracy_strategy: DegeneracyStrategy
 	evaluation_strategy: EvaluationStrategy
 	model_refinement_strategy: ModelRefinementStrategy
-	num_iterations: int
+	post_processing_strategy: PostProcessingStrategy
 
 class USAC:
 	def __init__(self, steps: USACStepsDefinition):
+		self.pre_processing_strategy = steps.get('pre_processing_strategy', NoPreProcessingPreprocessing())
+		self.number_of_iterations_strategy = steps.get('number_of_iterations_strategy', ConstantNumberOfIterations())
 		self.prefiltering_strategy = steps.get('prefiltering_strategy', AllPassPrefiltering())
 		self.sampling_strategy = steps.get('sampling_strategy')
 		if (self.sampling_strategy is None):
@@ -53,18 +57,20 @@ class USAC:
 		self.degeneracy_strategy = steps.get('degeneracy_strategy', AllPassDegeneracy())
 		self.evaluation_strategy = steps.get('evaluation_strategy', CountEvaluation())
 		self.model_refinement_strategy = steps.get('model_refinement_strategy', NoRefinementModelRefinement())
-		self.num_iterations = steps.get('num_iterations', 1000)
+		self.post_processing_strategy = steps.get('post_processing_strategy', NoPostProcessingPreprocessing())
 
 	def run(self, data):
+		# Step 0: Preprocessing
+		pre_processed_data, pre_process_output = self.pre_processing_strategy.pre_process(data)
 		# Step 1: Prefiltering
-		filtered_data = self.prefiltering_strategy.prefiltering(data)
+		filtered_data = self.prefiltering_strategy.prefiltering(pre_processed_data)
 		
 		# Initialize variables to track the best model
 		best_model = None
 		best_inliers = []
 		best_score = float('-inf')
-		
-		for _ in range(self.num_iterations):
+
+		for _ in range(self.number_of_iterations_strategy.number_of_iterations(filtered_data)):
 			# Step 2: Sampling
 			sample = self.sampling_strategy.sampling(filtered_data)
 			
@@ -93,15 +99,21 @@ class USAC:
 				best_model = model
 				best_inliers = inliers
 		
-		# Step 8: Model Refinement
 		if best_model is not None:
+			# Step 8: Model Refinement
 			best_model = self.model_refinement_strategy.model_refinement(best_model, best_inliers)
+			# Step 9: Post Processing
+			best_model, best_inliers = self.post_processing_strategy.post_process(best_model, best_inliers, pre_process_output)
 		
 		return best_model, best_inliers
 
 class USACBuilder:
 	def __init__(self):
 		self.steps: USACStepsDefinition = {}
+
+	def with_pre_processing_strategy(self, pre_processing_strategy: PreProcessingStrategy):
+		self.steps['pre_processing_strategy'] = pre_processing_strategy
+		return self
 
 	def with_prefiltering_strategy(self, prefiltering_strategy: PrefilteringStrategy):
 		self.steps['prefiltering_strategy'] = prefiltering_strategy
@@ -139,8 +151,12 @@ class USACBuilder:
 		self.steps['model_refinement_strategy'] = model_refinement_strategy
 		return self
 
-	def with_num_iterations(self, num_iterations: int):
-		self.steps['num_iterations'] = num_iterations
+	def with_number_of_iterations_strategy(self, number_of_iterations_strategy: NumberOfIterationsStrategy):
+		self.steps['number_of_iterations_strategy'] = number_of_iterations_strategy
+		return self
+	
+	def with_post_processing_strategy(self, post_processing_strategy: PostProcessingStrategy):
+		self.steps['post_processing_strategy'] = post_processing_strategy
 		return self
 
 	def build(self):
@@ -148,20 +164,20 @@ class USACBuilder:
 
 class USACFactory:
 	@staticmethod
-	def line_simple(num_iterations = 1000):
+	def line_simple():
 		return (USACBuilder()
 			.with_sampling_strategy(RandomPointsSampling())
 			.with_model_generation_strategy(LineFromPointsModelGeneration())
 			.with_verification_strategy(PointOnLineVerification())
-			.with_num_iterations(num_iterations)
+			.with_number_of_iterations_strategy(ConstantNumberOfIterations(1000))
 			.build())
 	
 	@staticmethod
-	def cylinder_simple(num_iterations = 20):
+	def cylinder_simple():
 		return (USACBuilder()
 			.with_sampling_strategy(RandomPointsSampling(9))
+			.with_sample_check_strategy(NotCoplanarSampleCheck())
 			.with_model_generation_strategy(CylinderFromPointsModelGeneration())
 			.with_verification_strategy(PointOnCylinderVerification())
-			.with_num_iterations(num_iterations)
 			.build())
 		
