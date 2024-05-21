@@ -13,14 +13,20 @@ z = np.random.uniform(0, height, num_points)
 x = radius * np.cos(theta)
 y = radius * np.sin(theta)
 
+# Calculate the normal vector pointing from the center to the surface points
+normals = np.column_stack((x, y, np.zeros(num_points)))
+normals /= np.linalg.norm(normals, axis=1)[:, np.newaxis]
+
 # Add noise to the points position
 noise_scale = 0.1
 x += np.random.normal(0, noise_scale, num_points)
 y += np.random.normal(0, noise_scale, num_points)
 z += np.random.normal(0, noise_scale, num_points)
 
+
 # Combine the coordinates into a single array
 points = np.column_stack((x, y, z))
+points_with_normals = np.column_stack((points, normals))
 
 # Plot the 3D points
 fig = plt.figure()
@@ -36,4 +42,4 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 # Define the path to save the points file
 points_file = os.path.join(script_dir, '../data/points.txt')
 # Save the points array to the file
-np.savetxt(points_file, points)
+np.savetxt(points_file, points_with_normals)
