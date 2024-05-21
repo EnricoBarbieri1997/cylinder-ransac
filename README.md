@@ -1,4 +1,4 @@
-# cylinder-ransac
+# USAC Ransac with provided cylinder implementations
 A USAC implementation of ransac for cylinder fitting.
 
 # Main Components
