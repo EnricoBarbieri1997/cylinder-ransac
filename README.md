@@ -51,6 +51,9 @@ In each subfolder of the `usac` directory a `strategy.py` file defines the gener
 - [ModelRefinementStrategy](usac/model_refinement/strategy.py)
 - [PostProcessingStrategy](usac/post_processing/strategy.py)
 
+## Main
+A main file (`main.py`) to run that accept a named argument `file` containing a numpy array saved in text form to use as samples for the USAC procedure
+
 ## Scripts
 A scripts folder containing files to generate dev points to use for testing is available. The available scripts can generate:
 - 2D points resembling a line with noise
