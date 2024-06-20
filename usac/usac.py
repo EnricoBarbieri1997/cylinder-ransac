@@ -80,6 +80,8 @@ class USAC:
 		best_inliers = []
 		best_score = float('-inf')
 
+		best_extra = None
+
 		for _ in range(self.number_of_iterations_strategy.number_of_iterations(filtered_data)):
 			# Step 2: Sampling
 			sample = self.sampling_strategy.sampling(filtered_data)
@@ -89,7 +91,7 @@ class USAC:
 				continue
 			
 			# Step 4: Model Generation
-			model = self.model_generation_strategy.model_generation(sample)
+			model, extra = self.model_generation_strategy.model_generation(sample)
 			
 			# Step 5: Model Check
 			if not self.model_check_strategy.model_check(model):
@@ -108,6 +110,7 @@ class USAC:
 				best_score = score
 				best_model = model
 				best_inliers = inliers
+				best_extra = extra
 		
 		if best_model is not None:
 			# Step 8: Model Refinement
@@ -115,7 +118,7 @@ class USAC:
 			# Step 9: Post Processing
 			best_model, best_inliers = self.post_processing_strategy.post_process(best_model, best_inliers, pre_process_output)
 		
-		return best_model, best_inliers
+		return best_model, best_inliers, best_extra
 
 class USACBuilder:
 	def __init__(self):

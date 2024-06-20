@@ -9,4 +9,4 @@ class LineFromPointsModelGeneration(ModelGenerationStrategy):
 		# Calculate the offset
 		intercept = y1 - (x1 * slope)
 
-		return slope, intercept
+		return [slope, intercept], []

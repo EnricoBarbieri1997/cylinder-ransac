@@ -40,4 +40,4 @@ class CylinderFromPointsWithNormalsModelGeneration(ModelGenerationStrategy):
 		center = projected_position_1 + alpha * projected_normal_1
 		radius = np.linalg.norm(projected_position_1 - center)
 
-		return cylinder_from_center_radius_axis(center, radius, orthogonal_direction)
+		return cylinder_from_center_radius_axis(center, radius, orthogonal_direction), [center, radius, orthogonal_direction]

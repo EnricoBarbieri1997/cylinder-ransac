@@ -27,4 +27,4 @@ class CylinderFromPointsFormingCircleModelGeneration(ModelGenerationStrategy):
 		radius = math.sqrt(tt * uu * np.dot(v, v) * iwsl2*0.5)
 		orthogonal_direction   = w / math.sqrt(wsl)
 
-		return cylinder_from_center_radius_axis(center, radius, orthogonal_direction)
+		return cylinder_from_center_radius_axis(center, radius, orthogonal_direction), [center, radius, orthogonal_direction]
