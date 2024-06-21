@@ -1,6 +1,6 @@
 import numpy as np
 
-def sample_points_on_cylinder(base_center, axis_direction, radius, height, num_points):
+def sample_points_on_cylinder(base_center, axis_direction, radius, height, num_points, include_normals=False):
     """
     Samples points on the surface of a cylinder.
     
@@ -36,6 +36,11 @@ def sample_points_on_cylinder(base_center, axis_direction, radius, height, num_p
         
         point_on_base_circle = x * ortho_vector1 + y * ortho_vector2
         point_on_cylinder = base_center + point_on_base_circle + z * axis_direction
+
+        if include_normals:
+            normal = point_on_base_circle - base_center
+            normal = normal / np.linalg.norm(normal)
+            point_on_cylinder = np.concatenate([point_on_cylinder, normal])
         
         points.append(point_on_cylinder)
     
