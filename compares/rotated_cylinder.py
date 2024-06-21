@@ -1,42 +1,65 @@
 import numpy as np
 import pyransac3d
-import open3d as o3d
 import matplotlib.pyplot as plt
 from usac.usac import USACFactory
-from utils.random_extra import random_rotation_matrix
+from utils.point_clouds import sample_points_on_cylinder
 
 # Define the parameters of the cylinder
 radius = 4.0
 height = 10.0
-num_points = 1000
+num_points = 200
 
-# Generate random rotation angles
-angles = np.random.uniform(0, 2*np.pi, 3)
-# mesh_cylinder = o3d.geometry.TriangleMesh.create_cylinder(radius=radius, height=height)
-mesh_cylinder = o3d.geometry.TriangleMesh.create_coordinate_frame()
-R = mesh_cylinder.get_rotation_matrix_from_xyz((np.pi / 2, 0, np.pi / 4))
-mesh_cylinder.rotate(R, center=(0, 0, 0))
-pcd_load = mesh_cylinder.sample_points_uniformly(number_of_points=num_points)
-# o3d.visualization.draw_geometries([pcd_load])
+center = (5, 5, 5)
+axis = np.random.rand(3)
+# axis = (1, 0, 0)
+points = sample_points_on_cylinder(center, axis, radius, height, num_points)
+
+x = points[:, 0]
+y = points[:, 1]
+z = points[:, 2]
+
+# Plot the 3D points
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.set_box_aspect((np.ptp(x), np.ptp(y), np.ptp(z)))
+ax.scatter(x, y, z)
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+plt.show()
 
 min_noise = 0.05
 max_noise = 0.4
 noise_step = 0.05
 
-for noise_scale in range(min_noise, max_noise, noise_step):
+noises = [x / 100.0 for x in range(int(min_noise*100), int(max_noise*100), int(noise_step*100))]
+
+errors_pyransac3d = []
+errors_our = []
+
+for noise_scale in noises:
     # Add noise to the points position
-    pcd_load[:, 0] += np.random.normal(0, noise_scale, num_points)
-    pcd_load[:, 1] += np.random.normal(0, noise_scale, num_points)
-    pcd_load[:, 2] += np.random.normal(0, noise_scale, num_points)
+    points[:, 0] += np.random.normal(0, noise_scale, num_points)
+    points[:, 1] += np.random.normal(0, noise_scale, num_points)
+    points[:, 2] += np.random.normal(0, noise_scale, num_points)
 
-    # Plot the 3D points
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(pcd_load[:, 0], pcd_load[:, 1], pcd_load[:, 2])
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    plt.show()
+    center_pyransac3d, axis_pyransac3d, radius_pyransac3d, inliers = pyransac3d.Cylinder().fit(points, thresh=0.2, maxIteration=1000)
+    [center_our, radius_our, axis_our], inliers,  = USACFactory.cylinder_from_points_forming_circle().run(points)
 
-    center_pyransac3d, axis_pyransac3d, radius_pyransac3d, inliers = pyransac3d.Cylinder().fit(pcd_load, thresh=0.2, maxIteration=1000)
-    model, inliers, [center, radius, axis] = USACFactory.cylinder_from_points_forming_circle().run(pcd_load)
+    error_pyransac3d = np.linalg.norm(center_pyransac3d - center) + np.linalg.norm(axis_pyransac3d - axis) + np.abs(radius_pyransac3d - radius)
+    error_our = np.linalg.norm(center_our - center) + np.linalg.norm(axis_our - axis) + np.abs(radius_our - radius)
+
+    # print(np.linalg.norm(center_pyransac3d - center) - np.linalg.norm(center_our - center))
+    # print(np.linalg.norm(axis_pyransac3d - axis) - np.linalg.norm(axis_our - axis))
+    # print(np.abs(radius_pyransac3d - radius) - np.abs(radius_our - radius))
+
+    errors_pyransac3d.append(error_pyransac3d)
+    errors_our.append(error_our)
+
+# Plot the errors
+plt.plot(noises, errors_pyransac3d, label='pyransac3d')
+plt.plot(noises, errors_our, label='our')
+plt.xlabel('Noise Scale')
+plt.ylabel('Error')
+plt.legend()
+plt.show()

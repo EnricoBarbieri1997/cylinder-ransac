@@ -1,6 +1,5 @@
 import numpy as np
 from usac.model_generation.strategy import ModelGenerationStrategy
-from utils.geometry import cylinder_from_center_radius_axis, rotation_between
 
 # https://github.com/CloudCompare/CloudCompare/issues/1237
 class CylinderFromPointsWithNormalsModelGeneration(ModelGenerationStrategy):
@@ -36,8 +35,8 @@ class CylinderFromPointsWithNormalsModelGeneration(ModelGenerationStrategy):
 			projected_position_2[1] - projected_position_1[1]
 		])
 
-		alpha, betha = np.linalg.solve(coefficients_matrix, known_terms)
+		alpha, beta = np.linalg.solve(coefficients_matrix, known_terms)
 		center = projected_position_1 + alpha * projected_normal_1
 		radius = np.linalg.norm(projected_position_1 - center)
 
-		return cylinder_from_center_radius_axis(center, radius, orthogonal_direction), [center, radius, orthogonal_direction]
+		return center, radius, orthogonal_direction

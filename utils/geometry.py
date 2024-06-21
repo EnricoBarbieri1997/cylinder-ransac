@@ -16,22 +16,29 @@ def cylinder_from_center_radius_axis(center, radius, axis):
 	z_up = [0, 0, 1]
 
 	rotation_from_z_up = rotation_between(z_up, axis)
-	transformation_matrix = np.identity(4)
-	transformation_matrix[0:3, 0:3] = rotation_from_z_up
+	rotation_matrix = np.identity(4)
+	rotation_matrix[0:3, 0:3] = rotation_from_z_up
+	translation = np.identity(4)
+	translation[0:3, 3] = center
+	transformation_matrix = np.dot(translation, rotation_matrix)
 
+	inverse_radius = 1 / (radius**2)
 	z_up_cylinder = [
-		[1, 0, 0, -center[0]],
-		[0, 1, 0, -center[1]],
+		[inverse_radius, 0, 0, 0],
+		[0, inverse_radius, 0, 0],
 		[0, 0, 0, 0],
-		[-center[0], -center[1], 0, -(radius**2 - center[0]**2 - center[1]**2)]
+		[0, 0, 0, -1]
 	]
 
 	# (x - c)^2 + (y-c)^2 = r^2
 	# x^2 -2cx + c^2 + y^2 - 2cy + c^2 = r^2
 	# x^2 -2cx + y^2 -2cy = (r^2 - c^2 - c^2)
 
-	transformed_cylinder = np.linalg.inv(np.transpose(transformation_matrix)) * z_up_cylinder * np.linalg.inv(transformation_matrix)
+	transformed_cylinder = transformation_matrix * z_up_cylinder * np.linalg.matrix_transpose(transformation_matrix)
 	transformed_cylinder /= transformed_cylinder[3, 3]
+	transformed_cylinder = np.identity(4)
+	transformed_cylinder[0:3, 0:3] = np.identity(3) - np.dot(axis, axis)
+	
 	return [
 		transformed_cylinder[0][0], # A
 		transformed_cylinder[1][1], # B

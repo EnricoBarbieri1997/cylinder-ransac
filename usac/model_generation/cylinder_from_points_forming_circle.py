@@ -1,7 +1,6 @@
 import math
 import numpy as np
 from usac.model_generation.strategy import ModelGenerationStrategy
-from utils.geometry import cylinder_from_center_radius_axis, rotation_between
 
 class CylinderFromPointsFormingCircleModelGeneration(ModelGenerationStrategy):
 	def model_generation(self, sample):
@@ -26,5 +25,6 @@ class CylinderFromPointsFormingCircleModelGeneration(ModelGenerationStrategy):
 		center = p1 + (u*tt*np.dot(u, v) - t*uu*np.dot(t,v)) * iwsl2
 		radius = math.sqrt(tt * uu * np.dot(v, v) * iwsl2*0.5)
 		orthogonal_direction   = w / math.sqrt(wsl)
+		orthogonal_direction = orthogonal_direction / np.linalg.norm(orthogonal_direction)
 
-		return cylinder_from_center_radius_axis(center, radius, orthogonal_direction), [center, radius, orthogonal_direction]
+		return center, radius, orthogonal_direction

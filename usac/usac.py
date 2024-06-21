@@ -27,6 +27,7 @@ from usac.sample_check.not_coplar import NotCoplanarSampleCheck
 from usac.sample_check.strategy import SampleCheckStrategy
 from usac.sampling.random_points import RandomPointsSampling
 from usac.sampling.strategy import SamplingStrategy
+from usac.verification.point_distance_from_cylinder_axis import PointDistanceFromCylinderAxisVerification
 from usac.verification.point_on_cylinder import PointOnCylinderVerification
 from usac.verification.point_on_line import PointOnLineVerification
 from usac.verification.point_with_normals_on_cylinder import PointWithNormalsOnCylinderVerification
@@ -80,8 +81,6 @@ class USAC:
 		best_inliers = []
 		best_score = float('-inf')
 
-		best_extra = None
-
 		for _ in range(self.number_of_iterations_strategy.number_of_iterations(filtered_data)):
 			# Step 2: Sampling
 			sample = self.sampling_strategy.sampling(filtered_data)
@@ -91,7 +90,7 @@ class USAC:
 				continue
 			
 			# Step 4: Model Generation
-			model, extra = self.model_generation_strategy.model_generation(sample)
+			model = self.model_generation_strategy.model_generation(sample)
 			
 			# Step 5: Model Check
 			if not self.model_check_strategy.model_check(model):
@@ -110,7 +109,6 @@ class USAC:
 				best_score = score
 				best_model = model
 				best_inliers = inliers
-				best_extra = extra
 		
 		if best_model is not None:
 			# Step 8: Model Refinement
@@ -118,7 +116,7 @@ class USAC:
 			# Step 9: Post Processing
 			best_model, best_inliers = self.post_processing_strategy.post_process(best_model, best_inliers, pre_process_output)
 		
-		return best_model, best_inliers, best_extra
+		return best_model, best_inliers
 
 class USACBuilder:
 	def __init__(self):
@@ -199,7 +197,7 @@ class USACFactory:
 		return (USACBuilder()
 			.with_sampling_strategy(RandomPointsSampling(2))
 			.with_model_generation_strategy(CylinderFromPointsWithNormalsModelGeneration())
-			.with_verification_strategy(PointWithNormalsOnCylinderVerification())
+			.with_verification_strategy(PointDistanceFromCylinderAxisVerification())
 			.with_number_of_iterations_strategy(ConstantNumberOfIterations(1000))
 			.build())
 	
@@ -208,6 +206,6 @@ class USACFactory:
 		return (USACBuilder()
 			.with_sampling_strategy(RandomPointsSampling(3))
 			.with_model_generation_strategy(CylinderFromPointsFormingCircleModelGeneration())
-			.with_verification_strategy(PointOnCylinderVerification())
+			.with_verification_strategy(PointDistanceFromCylinderAxisVerification())
 			.with_number_of_iterations_strategy(ConstantNumberOfIterations(1000))
 			.build())

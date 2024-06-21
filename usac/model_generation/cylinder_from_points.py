@@ -10,4 +10,4 @@ class CylinderFromPointsModelGeneration(ModelGenerationStrategy):
 		coefficients_matrix = np.array(coefficients_matrix)
 		known_terms = np.array([-1, -1, -1, -1 , -1, -1, -1, -1, -1])
 
-		return np.linalg.solve(coefficients_matrix, known_terms), []
+		return np.linalg.solve(coefficients_matrix, known_terms)
