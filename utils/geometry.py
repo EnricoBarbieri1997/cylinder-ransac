@@ -1,7 +1,7 @@
 import numpy as np
 
 def point_to_line_distance(point, offset, axis):
-	return abs(np.linalg.norm(np.cross(axis, point - offset)) / np.linalg.norm(axis))
+	return abs(np.linalg.norm(np.cross(axis, point[:3] - offset)) / np.linalg.norm(axis))
 
 def rotation_between(vector_a, vector_b):
 	v = np.cross(vector_a, vector_b)

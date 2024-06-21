@@ -91,7 +91,10 @@ class USAC:
 				continue
 			
 			# Step 4: Model Generation
-			model = self.model_generation_strategy.model_generation(sample)
+			try:
+				model = self.model_generation_strategy.model_generation(sample)
+			except:
+				continue
 			
 			# Step 5: Model Check
 			if not self.model_check_strategy.model_check(model):
