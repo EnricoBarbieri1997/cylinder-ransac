@@ -24,6 +24,7 @@ from usac.prefiltering.all_pass import AllPassPrefiltering
 from usac.prefiltering.strategy import PrefilteringStrategy
 from usac.sample_check.all_pass import AllPassSampleCheck
 from usac.sample_check.not_coplar import NotCoplanarSampleCheck
+from usac.sample_check.not_parallel_normals import NotParallelNormalsSampleCheck
 from usac.sample_check.strategy import SampleCheckStrategy
 from usac.sampling.random_points import RandomPointsSampling
 from usac.sampling.strategy import SamplingStrategy
@@ -196,6 +197,7 @@ class USACFactory:
 	def cylinder_with_normals():
 		return (USACBuilder()
 			.with_sampling_strategy(RandomPointsSampling(2))
+			.with_sample_check_strategy(NotParallelNormalsSampleCheck())
 			.with_model_generation_strategy(CylinderFromPointsWithNormalsModelGeneration())
 			.with_verification_strategy(PointDistanceFromCylinderAxisVerification())
 			.with_number_of_iterations_strategy(ConstantNumberOfIterations(1000))
