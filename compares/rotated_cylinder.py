@@ -2,6 +2,7 @@ import numpy as np
 import pyransac3d
 import matplotlib.pyplot as plt
 from usac.usac import USACFactory
+from utils.geometry import point_to_line_distance
 from utils.point_clouds import sample_points_on_cylinder
 
 # Define the parameters of the cylinder
@@ -46,8 +47,8 @@ for noise_scale in noises:
     center_pyransac3d, axis_pyransac3d, radius_pyransac3d, inliers = pyransac3d.Cylinder().fit(points, thresh=0.2, maxIteration=1000)
     [center_our, radius_our, axis_our], inliers,  = USACFactory.cylinder_from_points_forming_circle().run(points)
 
-    error_pyransac3d = np.linalg.norm(center_pyransac3d - center) + np.linalg.norm(axis_pyransac3d - axis) + np.abs(radius_pyransac3d - radius)
-    error_our = np.linalg.norm(center_our - center) + np.linalg.norm(axis_our - axis) + np.abs(radius_our - radius)
+    error_pyransac3d = point_to_line_distance(center_pyransac3d, center, axis) + np.linalg.norm(axis_pyransac3d - axis) + np.abs(radius_pyransac3d - radius)
+    error_our = point_to_line_distance(center_our, center, axis) + np.linalg.norm(axis_our - axis) + np.abs(radius_our - radius)
 
     # print(np.linalg.norm(center_pyransac3d - center) - np.linalg.norm(center_our - center))
     # print(np.linalg.norm(axis_pyransac3d - axis) - np.linalg.norm(axis_our - axis))
